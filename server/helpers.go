@@ -123,8 +123,16 @@ func (p *Plugin) createStartMeetingPost(userId string, channelId string, m *data
 		return
 	}
 
-	textPost := &model.Post{UserId: userId, ChannelId: channelId,
-		Message: "#BigBlueButton #" + m.Name_ + " #ID" + m.MeetingID_, Type: "custom_bbb"}
+		user, _ := p.API.GetUser(userId)
+		username := user.Username
+		var participant = dataStructs.Participants{} 
+		participant.FullName_ = username
+		participant.MeetingID_ = m.MeetingID_ 
+		participant.Password_ = m.ModeratorPW_ 
+		joinURL, _ := bbbAPI.GetJoinURL(&participant)
+		textPost := &model.Post{UserId: userId, ChannelId: channelId,
+		Message: "#Flipchat meeting . Click on below Link to join # " + joinURL, Type: "custom_bbb"}
+
 
 	textPost.Props = model.StringInterface{
 		"from_webhook":      "true",
